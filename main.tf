@@ -12,7 +12,7 @@ provider "aws" {
 }
 
 
-resource "aws_iam_role1" "eks-iam-role" {
+resource "aws_iam_role" "eks-iam-role" {
  name = "mohan-cluster-eks-iam-role"
 
  path = "/"
@@ -33,20 +33,20 @@ resource "aws_iam_role1" "eks-iam-role" {
 EOF
 }
 
-resource "aws_iam_role1_policy_attachment" "AmazonEKSClusterPolicy" {
+resource "aws_iam_role_policy_attachment" "AmazonEKSClusterPolicy" {
  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
- role    = aws_iam_role1.eks-iam-role.name
+ role    = aws_iam_role.eks-iam-role.name
 }
 
-resource "aws_iam_role1_policy_attachment" "AmazonEC2ContainerRegistryReadOnly-EKS" {
+resource "aws_iam_role_policy_attachment" "AmazonEC2ContainerRegistryReadOnly-EKS" {
  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
- role    = aws_iam_role1.eks-iam-role.name
+ role    = aws_iam_role.eks-iam-role.name
 }
 
 
 resource "aws_eks_cluster" "mohan-cluster-eks" {
  name = "mohan-cluster-cluster"
- role_arn = aws_iam_role1.eks-iam-role.arn
+ role_arn = aws_iam_role.eks-iam-role.arn
 
  
 
@@ -58,7 +58,7 @@ resource "aws_eks_cluster" "mohan-cluster-eks" {
   
 
  depends_on = [
-  aws_iam_role1.eks-iam-role,
+  aws_iam_role.eks-iam-role,
   aws_cloudwatch_log_group.mohan-cluster
  ]
 }
@@ -68,7 +68,7 @@ resource "aws_eks_cluster" "mohan-cluster-eks" {
 
 
 
-resource "aws_iam_role1" "workernodes" {
+resource "aws_iam_role" "workernodes" {
   name = "eks-node-group-example"
  
   assume_role_policy = jsonencode({
@@ -83,30 +83,30 @@ resource "aws_iam_role1" "workernodes" {
   })
  }
  
- resource "aws_iam_role1_policy_attachment" "AmazonEKSWorkerNodePolicy" {
+ resource "aws_iam_role_policy_attachment" "AmazonEKSWorkerNodePolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
-  role    = aws_iam_role1.workernodes.name
+  role    = aws_iam_role.workernodes.name
  }
  
- resource "aws_iam_role1_policy_attachment" "AmazonEKS_CNI_Policy" {
+ resource "aws_iam_role_policy_attachment" "AmazonEKS_CNI_Policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
-  role    = aws_iam_role1.workernodes.name
+  role    = aws_iam_role.workernodes.name
  }
  
- resource "aws_iam_role1_policy_attachment" "EC2InstanceProfileForImageBuilderECRContainerBuilds" {
+ resource "aws_iam_role_policy_attachment" "EC2InstanceProfileForImageBuilderECRContainerBuilds" {
   policy_arn = "arn:aws:iam::aws:policy/EC2InstanceProfileForImageBuilderECRContainerBuilds"
-  role    = aws_iam_role1.workernodes.name
+  role    = aws_iam_role.workernodes.name
  }
  
- resource "aws_iam_role1_policy_attachment" "AmazonEC2ContainerRegistryReadOnly" {
+ resource "aws_iam_role_policy_attachment" "AmazonEC2ContainerRegistryReadOnly" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-  role    = aws_iam_role1.workernodes.name
+  role    = aws_iam_role.workernodes.name
  }
 
   resource "aws_eks_node_group" "worker-node-group" {
   cluster_name  = aws_eks_cluster.mohan-cluster-eks.name
   node_group_name = "mohan-cluster-workernodes"
-  node_role_arn  = aws_iam_role1.workernodes.arn
+  node_role_arn  = aws_iam_role.workernodes.arn
   subnet_ids   = [var.subnet_id_1, var.subnet_id_2]
   
 
@@ -120,9 +120,9 @@ resource "aws_iam_role1" "workernodes" {
   }
  
   depends_on = [
-   aws_iam_role1_policy_attachment.AmazonEKSWorkerNodePolicy,
-   aws_iam_role1_policy_attachment.AmazonEKS_CNI_Policy,
-   aws_iam_role1_policy_attachment.AmazonEC2ContainerRegistryReadOnly,
+   aws_iam_role_policy_attachment.AmazonEKSWorkerNodePolicy,
+   aws_iam_role_policy_attachment.AmazonEKS_CNI_Policy,
+   aws_iam_role_policy_attachment.AmazonEC2ContainerRegistryReadOnly,
   ]
  } 
  
