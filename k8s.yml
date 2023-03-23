@@ -1,44 +1,51 @@
-apiVersion: v1
-kind: Service
+apiVersion: client.authentication.k8s.io/v1beta1
+kind: ExecCredential
 metadata:
-  name: mohan-cluster-cluster
-  labels:
-    app: mohan-cluster-cluster
+  name: my-exec-credential
 spec:
-  ports:
-  - name: "80"
-    port: 80
-    targetPort: mohan-cluster-cluster
-    protocol: TCP
-  - name: "443"
-    port: 443
-    targetPort: mohan-cluster-cluster
-    protocol: TCP
-  selector:
-    app: mohan-cluster-cluster
-    type: LoadBalancer
 
 ---
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mohan-cluster-cluster
+  creationTimestamp: null
   labels:
-    app: mohan-cluster-cluster
+    app: webapp
+  name: webapp
 spec:
-  replicas: 1
+  replicas: 2
   selector:
-      matchLabels:
-        app: mohan-cluster-cluster
+    matchLabels:
+      app: webapp
+  strategy: {}
   template:
     metadata:
+      creationTimestamp: null
       labels:
-        app: mohan-cluster-cluster
+        app: webapp
     spec:
       containers:
-      - name: mohan-cluster-cluster
-        image: default/mohan100196-demo
+      - image: public.ecr.aws/x4u0l8n8/mohan:latest
+        name: webapp
+        imagePullPolicy: Always
+        resources: {}
         ports:
-          - containerPort: 9000
-            name: mohan-cluster-cluster
-            protocol: TCP
+          - containerPort: 3080 
+status: {}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: webapp
+  labels:
+    run: webapp
+spec:
+  ports:
+  - port: 3080
+    protocol: TCP
+  selector:
+    app: webapp
+  type: NodePort
