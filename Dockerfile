@@ -1,11 +1,11 @@
-FROM node:latest
+FROM node:12.4.0-alpine
 
-WORKDIR /app
+WORKDIR /work/
 
-COPY . /app
+COPY ./package.json /work/package.json
 
 RUN npm install
 
-EXPOSE 9000
+COPY . /work/
 
-CMD ["node","index.js"]
+CMD node .
