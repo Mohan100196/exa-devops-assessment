@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mohan-cluster-cluster
+  labels:
+    app: mohan-cluster-cluster
+spec:
+  ports:
+  - name: "80"
+    port: 80
+    targetPort: mohan-cluster-cluster
+    protocol: TCP
+  - name: "443"
+    port: 443
+    targetPort: mohan-cluster-cluster
+    protocol: TCP
+  selector:
+    app: mohan-cluster-cluster
+    type: LoadBalancer
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mohan-cluster-cluster
+  labels:
+    app: mohan-cluster-cluster
+spec:
+  replicas: 1
+  selector:
+      matchLabels:
+        app: mohan-cluster-cluster
+  template:
+    metadata:
+      labels:
+        app: mohan-cluster-cluster
+    spec:
+      containers:
+      - name: mohan-cluster-cluster
+        image: default/mohan100196-demo
+        ports:
+          - containerPort: 9000
+            name: mohan-cluster-cluster
+            protocol: TCP
